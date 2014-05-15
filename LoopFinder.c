@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------
-// Brute force search for closed motif detection in undirected simple graphs.
+// Brute force search for closed loop in undirected simple graphs.
 // Matheus Viana, 19.04.2014 - vianamp@gmail.com
 //---------------------------------------------------------------------------------
 
@@ -24,10 +24,10 @@ bool *U;// Vector of size N that flags nodes that are being used in the current 
 int  *L;// Vector of size N that counts the number of loops that each node belongs
         // to.
 
-std::list<bool*> UsageList;// List that will store all motifis found.
+std::list<bool*> UsageList;// List that will store all loops found.
 std::list<bool*>::iterator itbool;// Iterator for the list.
 
-std::list<int*> Motifs;// List that will store all motifis found.
+std::list<int*> Loops;// List that will store all loops found.
 std::list<int*>::iterator itint;// Iterator for the list.
 
 FILE *f;// Pointer for the network gnet file.
@@ -44,19 +44,19 @@ bool _are_similar(bool *A, bool *B) {
   return (s==N) ? 1 : 0;
 }
 
-void _add_new_motif(int *V) {
+void _add_new_loop(int *V) {
   int *newM = new int[lmax];
   bool *newU = new bool[N];
   for ( int i=N; i--; ) newU[i]=U[i];
   for ( int i=lmax; i--; ) newM[i]=V[i];
   UsageList.insert(UsageList.begin(),newU);  
-  Motifs.insert(Motifs.begin(),newM);  
+  Loops.insert(Loops.begin(),newM);  
 }
 
-// Check whether the new motif just found is already present in the list "UsageList"
-// or not. If not, add the new motif.
+// Check whether the new loop just found is already present in the list "UsageList"
+// or not. If not, add the new loop.
 
-void _check_new_motif(int *V) {
+void _check_new_loop(int *V) {
   if (UsageList.size()>0) {
     bool *addedU;
     for ( itbool=UsageList.begin(); itbool!=UsageList.end(); ++itbool) {
@@ -64,14 +64,14 @@ void _check_new_motif(int *V) {
       if (_are_similar(U,addedU)) return;
     }
   }
-  _add_new_motif(V);
+  _add_new_loop(V);
 }
 
-void _print_motifs() {
+void _print_loops() {
   int i, *W;
-  printf("@Number of motifs of length %d found: %d.\n",lmax,(int)Motifs.size());
-  printf("@List of motifs:\n");
-  for (itint=Motifs.begin(); itint!=Motifs.end(); ++itint) {
+  printf("@Number of loops of length %d found: %d.\n",lmax,(int)Loops.size());
+  printf("@List of loops:\n");
+  for (itint=Loops.begin(); itint!=Loops.end(); ++itint) {
     for (i=0;i<lmax;i++) {
       W = *itint;
       printf("%d ",W[i]);
@@ -104,7 +104,7 @@ void _advance(int length, int *V) {
     }
   } else {
       if ( V[0] == V[lmax] ) {
-        _check_new_motif(V);
+        _check_new_loop(V);
       }
       U[V[0]] = false;
   }
@@ -113,7 +113,7 @@ void _advance(int length, int *V) {
 // Reading the gnet file and initializing the both adjacency matrix and vector U.
 // Edges weights are not being used in the current version (third column of gnet
 // file), but in future we might be interested in using it in order to calculate
-// motif properties, such as total real length.
+// loop properties, such as total real length.
 
 void _read_network(const char *filename){
   float w;
@@ -140,7 +140,7 @@ void _read_network(const char *filename){
 
 void _export_gml(const char *filename) {
 
-  _print_motifs();
+  _print_loops();
 
   int i, j;
   char path[32];
