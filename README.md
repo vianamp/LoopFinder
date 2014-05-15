@@ -1,5 +1,7 @@
-LoopFinder (Matheus Viana, vianamp@gmail.com - 14.05.15)
+LoopFinder
 ==========
+
+[Matheus Viana, vianamp@gmail.com - 14.05.15]
 
 Brute force loop detector in graphs. The user must specify the size L of the desired loop. This algorithm generates sequences of L interger numbers and test if these sequences correspond to closed loops in a given graph.
 
