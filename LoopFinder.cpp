@@ -115,13 +115,14 @@ void _advance(int length, int *V) {
 // file), but in future we might be interested in using it in order to calculate
 // loop properties, such as total real length.
 
-void _read_network(const char *filename){
+void _read_network(const char filename[]){
   float w;
   int i, j;
   char path[32];
   sprintf(path,"%s.gnet",filename);
   f = fopen(path,"r");
   fscanf(f,"%d",&N);
+
   L = new int[N];
   U = new bool[N];
   A = new bool[N*N];
@@ -176,16 +177,50 @@ void _export_gml(const char *filename) {
 
 int main(int argc, char *argv[]) {
 
-  _read_network(argv[1]);
-  lmax = atoi(argv[2]);
-  int V[lmax+1];
+  int i, n;
+  char _impath[128];
+  sprintf(_impath,"");
 
-  for (int i=N; i--; ) {
-    V[lmax] = i;
-    _advance(lmax,V);
+  // Collecting input parameters
+  for (i = 0; i < argc; i++) {
+      if (!strcmp(argv[i],"-path")) {
+          sprintf(_impath,"%s//",argv[i+1]);
+      }
+      if (!strcmp(argv[i],"-n")) {
+          n = atoi(argv[i+1]);
+      }
   }
- 
-  _export_gml(argv[1]);
 
-  return 0;
+  // Generating list of files to run
+  char _cmd[256];
+  sprintf(_cmd,"ls %s*.gnet | sed -e 's/.gnet//' > %sLoopFinder.files",_impath,_impath);
+  system(_cmd);
+
+  // Iterating over many files in the list
+  char _gnetfilename[256];
+  char _gnetlistpath[128];
+  char _xgmlfilename[256];
+  sprintf(_gnetlistpath,"%sLoopFinder.files",_impath);
+  FILE *f = fopen(_gnetlistpath,"r");
+  while (fgets(_gnetfilename,256, f) != NULL) {
+      printf(">>%s",_gnetfilename);
+      _gnetfilename[strcspn(_gnetfilename, "\n" )] = '\0';
+
+      // Finding loops
+      _read_network(_gnetfilename);
+      lmax = n;
+      int V[lmax+1];
+
+      for (int i=N; i--; ) {
+        V[lmax] = i;
+        _advance(lmax,V);
+      }
+
+      // Saving GML file
+    _export_gml(_gnetfilename);
+
+  }
+  fclose(f);
+
+  return 1;
 }
