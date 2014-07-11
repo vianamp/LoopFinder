@@ -1,0 +1,15 @@
+@Number of loops of length 5 found: 0
+@List of loops:
+@Participation of each node:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
