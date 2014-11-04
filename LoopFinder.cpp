@@ -73,7 +73,7 @@ void _print_loops(const char _path_prefix[], double *attributes) {
 
 	int i, *W;
 	char FullPath[256];
-	sprintf(FullPath,"%s.txt",_path_prefix);
+	sprintf(FullPath,"%s-l%d.loopfinder",_path_prefix,lmax);
 	FILE *f = fopen(FullPath,"w");
 	fprintf(f,"@Number of loops of length %d found: %d\n",lmax,(int)Loops.size());
 	fprintf(f,"@List of loops:\n");
@@ -186,7 +186,7 @@ void _export_gml(const char _path_prefix[]) {
 	for ( i = 0; i < N; i++ ){
 		fprintf(f,"<node id=\"%d\" label=\"%d\" name=\"%d\">\n",i,i,i);
 		fprintf(f,"\t<att type=\"real\" name=\"cycles\" value=\"%f\"/>\n",(float)L[i]);
-		fprintf(f,"\t<graphics fill=\"GREEN\" outline=\"BLACK\" h=\"%f\" w=\"%f\" x=\"0.0\" y=\"0.0\" type=\"ELLIPSE\"/>\n",1+sqrt(10*(float)L[i]),1+sqrt(10*(float)L[i]));
+		fprintf(f,"\t<graphics fill=\"GREEN\" outline=\"BLACK\" h=\"%f\" w=\"%f\" x=\"0.0\" y=\"0.0\" type=\"ELLIPSE\"/>\n",10+10*sqrt(10*(float)L[i]),10+10*sqrt(10*(float)L[i]));
 		fprintf(f,"</node>\n");
 	}
 
@@ -213,6 +213,10 @@ void _export_gml(const char _path_prefix[]) {
 
 int main(int argc, char *argv[]) {
 
+	#ifdef DEBUG
+		printf("Loop finder [Debug mode]...\n");
+	#endif
+
 	int i, n;
 	char _rootfolder[128];
 	sprintf(_rootfolder,"");
@@ -226,6 +230,10 @@ int main(int argc, char *argv[]) {
 			n = atoi(argv[i+1]);
 		}
 	}
+
+	#ifdef DEBUG
+		printf("Folder: %s\n",_rootfolder);
+	#endif
 
 	// Generating list of files to run
 	char _cmd[256];
